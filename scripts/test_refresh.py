@@ -29,7 +29,7 @@ with tempfile.TemporaryDirectory() as temporary:
         }
         for index in range(1, 14)
     ]
-    for page, batch in [(1, rows[:12]), (2, rows[12:])]:
+    for page, batch in [(1, rows)]:
         (cache / f"page-{page:04}.json").write_text(json.dumps({
             "code": 200,
             "data": {"count": 13, "rows": batch},
@@ -46,6 +46,22 @@ with tempfile.TemporaryDirectory() as temporary:
     assert report["selected_rows"] == 1
     assert '"source": "cache"' in result.stdout
     assert '"event": "page_delay"' not in result.stdout
+
+    legacy_cache = pathlib.Path(temporary) / "legacy-cache"
+    legacy_cache.mkdir()
+    (legacy_cache / "page-0001.json").write_text(json.dumps({
+        "code": 200,
+        "data": {"count": 13, "rows": rows[:12]},
+    }))
+    mismatch = subprocess.run(
+        [sys.executable, "scripts/collect.py", "--cache", str(legacy_cache)],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert mismatch.returncode != 0
+    assert "existing cache uses 12 records per page" in mismatch.stderr
 
     link_report = pathlib.Path(temporary) / "links.json"
     run([

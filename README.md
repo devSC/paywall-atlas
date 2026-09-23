@@ -4,7 +4,7 @@
 
 按应用分类浏览付费墙与完整流程。每个 App 独占一行：名称直接链接 App Store，下方按「视频 → 全部截图」横向展示。
 
-支持分类、搜索、收藏、排序、截图放大与键盘翻页；每页 20 个应用，适配手机。图片和视频仅保存原始链接，浏览时按需加载，不需要下载媒体文件。
+支持分类、搜索、收藏、排序、截图放大与键盘翻页；每页 100 个应用，适配手机。图片和视频仅保存原始链接，浏览时按需加载，不需要下载媒体文件。
 
 ## 当前数据
 
@@ -16,11 +16,11 @@
 | 应用分类 | 25 |
 | 流程截图链接 | 17,347 |
 | 视频链接 | 1,462 |
-| 页面数（每页 20 个应用） | 74 |
+| 页面数（每页 100 个应用） | 15 |
 
 日期口径是 `recent_capture_update`（截图／流程更新时间），范围为 `2026-01-01`（含）至 `2027-01-01`（不含）。本次公开数据实际日期为 **2026-01-04 至 2026-05-09**；不意味着其他权限或地区的数据也只到这个日期。
 
-遍历了公开列表的 **356 页、4,268 条记录**，与接口报告的总数一致，无重复 info_id。筛出 1,465 条 2026 年记录；3 条缺少截图日期的记录单独保存在 `reports/undated-records.json`，不混入年度数据。
+遍历了公开列表的 **43 页、4,268 条记录**（来源每页最多 100 条），与接口报告的总数一致，无重复 info_id。筛出 1,465 条 2026 年记录；3 条缺少截图日期的记录单独保存在 `reports/undated-records.json`，不混入年度数据。
 
 本次覆盖列表当前提供的流程，不声称覆盖其他地区、需登录／Pro 权限的内容或每个应用的全部历史版本。网站高级日期筛选需要 Pro，本次未使用该功能，读取普通公开分页后在本地按日期归类。
 
@@ -69,10 +69,12 @@ python3 scripts/refresh.py
 python3 scripts/refresh.py --plan
 ```
 
+完整的更新、断点续传、验证、部署与故障排查说明见 [资源更新与运维手册](docs/RESOURCE_REFRESH_GUIDE.md)。
+
 手动执行方式：
 
 ```bash
-python3 scripts/collect.py --cache /tmp/paywallpro-new-run --year 2026
+python3 scripts/collect.py --cache /tmp/paywallpro-new-run --year 2026 --page-size 100
 python3 scripts/build_data.py --cache /tmp/paywallpro-new-run
 python3 scripts/audit_collection.py --cache /tmp/paywallpro-new-run
 python3 scripts/check_links.py --cache /tmp/paywallpro-new-run --output reports/link-checks.json

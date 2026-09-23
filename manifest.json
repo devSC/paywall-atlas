@@ -5,12 +5,28 @@
     "year": 2026,
     "date_field": "recent_capture_update",
     "region_code": 1102,
-    "started_at": "2026-09-23T09:47:21.312028+00:00",
-    "pages": 356,
+    "started_at": "2026-09-23T14:44:25.825062+00:00",
+    "pages": 43,
     "status": "complete",
     "stop_reason": "Public list exhausted",
     "reported_count": 4268,
-    "finished_at": "2026-09-23T09:54:49.616277+00:00",
+    "source_page_size": 100,
+    "pacing": {
+      "delay_seconds": [
+        1.2,
+        2.8
+      ],
+      "break_every_pages": [
+        24,
+        36
+      ],
+      "break_seconds": [
+        7.0,
+        15.0
+      ],
+      "transparent_user_agent": "paywall-atlas-refresh/1.0"
+    },
+    "finished_at": "2026-09-23T14:47:38.998220+00:00",
     "unique_rows": 4268,
     "selected_rows": 1465,
     "unknown_dates": 3,
@@ -8154,12 +8170,12 @@
       "mrr": 47,
       "onboarding_url": "https://cdn.dingyuebao.cn/test/capture/1776916501234_963.mp4",
       "create_time": "2025-06-13T03:11:52.000Z",
-      "update_time": "2026-09-20T21:45:22.000Z",
+      "update_time": "2026-09-23T13:08:02.000Z",
       "average_daily_arpu": "0.00",
       "average_daily_arpu_bp": null,
       "average_daily_revenue_bp": null,
       "last_version": "138.1.2",
-      "last_update_date": "2026-03-27",
+      "last_update_date": "2026-09-18",
       "category_name": "Health & Fitness",
       "recent_capture_update": "2026-04-23T04:03:32.000Z",
       "screen": null,

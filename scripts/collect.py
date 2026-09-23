@@ -10,11 +10,11 @@ import subprocess
 import time
 
 
-def request(page: int, resolve: str | None) -> dict:
+def request(page: int, page_size: int, resolve: str | None) -> dict:
     payload = {
         "mode": "fall",
         "page": page,
-        "limit": 12,
+        "limit": page_size,
         "region_code": 1102,
         "sort": {"type": "recent_update_date", "order": "desc"},
     }
@@ -50,6 +50,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--cache", required=True)
     parser.add_argument("--resolve")
     parser.add_argument("--year", type=int, default=2026)
+    parser.add_argument("--page-size", type=int, default=100)
     parser.add_argument("--delay-min", type=float, default=0.35)
     parser.add_argument("--delay-max", type=float, default=0.35)
     parser.add_argument("--break-every-min", type=int, default=0)
@@ -60,6 +61,8 @@ def parse_args() -> argparse.Namespace:
     args = parser.parse_args()
     if not 2000 <= args.year <= 2100:
         parser.error("--year must be between 2000 and 2100")
+    if not 1 <= args.page_size <= 100:
+        parser.error("--page-size must be between 1 and 100")
     for low, high, name in [
         (args.delay_min, args.delay_max, "delay"),
         (args.break_min, args.break_max, "break"),
@@ -75,6 +78,35 @@ def main() -> None:
     args = parse_args()
     cache = pathlib.Path(args.cache)
     cache.mkdir(parents=True, exist_ok=True)
+    cache_config = {
+        "page_size": args.page_size,
+        "region_code": 1102,
+        "sort": {"type": "recent_update_date", "order": "desc"},
+    }
+    config_file = cache / "config.json"
+    if config_file.exists():
+        existing_config = json.loads(config_file.read_text())
+        if existing_config != cache_config:
+            raise SystemExit(
+                f"cache configuration mismatch: {existing_config}; "
+                "use a new cache directory"
+            )
+    else:
+        first_page = cache / "page-0001.json"
+        if first_page.exists():
+            first_body = json.loads(first_page.read_text()).get("data") or {}
+            first_rows = first_body.get("rows") or []
+            first_count = first_body.get("count")
+            if (
+                isinstance(first_count, int)
+                and first_count > len(first_rows)
+                and len(first_rows) != args.page_size
+            ):
+                raise SystemExit(
+                    f"existing cache uses {len(first_rows)} records per page, "
+                    f"not {args.page_size}; use a new cache directory"
+                )
+        config_file.write_text(json.dumps(cache_config, ensure_ascii=False, indent=2))
     rng = random.Random(args.seed)
     paced_breaks = args.break_every_min > 0
     next_break = (
@@ -90,6 +122,7 @@ def main() -> None:
         "status": "partial",
         "stop_reason": None,
         "reported_count": None,
+        "source_page_size": args.page_size,
         "pacing": {
             "delay_seconds": [args.delay_min, args.delay_max],
             "break_every_pages": [args.break_every_min, args.break_every_max],
@@ -107,7 +140,7 @@ def main() -> None:
             if from_cache:
                 result = json.loads(file.read_text())
             else:
-                result = request(page, args.resolve)
+                result = request(page, args.page_size, args.resolve)
                 file.write_text(json.dumps(result, ensure_ascii=False, indent=2))
                 fetched_since_break += 1
                 ranged_sleep(rng, args.delay_min, args.delay_max, "page_delay")
@@ -155,7 +188,9 @@ def main() -> None:
                 ),
                 flush=True,
             )
-            if not batch or (isinstance(count, int) and page * 12 >= count):
+            if not batch or (
+                isinstance(count, int) and page * args.page_size >= count
+            ):
                 report["status"] = (
                     "complete"
                     if len(rows) == count and not report.get("count_changed")

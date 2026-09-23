@@ -21,7 +21,7 @@ RESOURCE_PATHS = [
 ]
 PACES = {
     "gentle": {
-        "label": "温和（推荐，约 15–25 分钟）",
+        "label": "温和（推荐，约 2–4 分钟）",
         "args": [
             "--delay-min", "1.2", "--delay-max", "2.8",
             "--break-every-min", "24", "--break-every-max", "36",
@@ -29,7 +29,7 @@ PACES = {
         ],
     },
     "balanced": {
-        "label": "均衡（约 8–15 分钟）",
+        "label": "均衡（约 1–2 分钟）",
         "args": [
             "--delay-min", "0.6", "--delay-max", "1.4",
             "--break-every-min", "40", "--break-every-max", "60",
@@ -37,7 +37,7 @@ PACES = {
         ],
     },
     "fast": {
-        "label": "快速（固定 0.35 秒，不模拟浏览节奏）",
+        "label": "快速（通常少于 1 分钟，不模拟浏览节奏）",
         "args": ["--delay-min", "0.35", "--delay-max", "0.35"],
     },
 }
@@ -115,7 +115,7 @@ def main() -> int:
 
     collect = [
         sys.executable, "scripts/collect.py", "--cache", str(cache),
-        "--year", str(year), *PACES[pace]["args"],
+        "--year", str(year), "--page-size", "100", *PACES[pace]["args"],
     ]
     if resolve:
         collect += ["--resolve", resolve]
@@ -144,6 +144,7 @@ def main() -> int:
         print("已跳过链接检查；reports/link-checks.json 仍是上次结果。")
     run([sys.executable, "scripts/check_access_policy.py"])
     run([sys.executable, "scripts/check_media_policy.py"])
+    run([sys.executable, "scripts/check_gallery_policy.py"])
     run(["git", "diff", "--stat", "--", *RESOURCE_PATHS])
 
     if not confirm("提交并推送到个人仓库，触发 Pages 部署"):
