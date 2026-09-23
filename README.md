@@ -1,5 +1,7 @@
 # WALL / ATLAS
 
+[直接打开在线浏览页](https://castbox.github.io/paywall-atlas/)
+
 按应用分类浏览付费墙与完整流程。每个 App 独占一行：名称直接链接 App Store，下方按「视频 → 全部截图」横向展示。
 
 支持分类、搜索、收藏、排序、截图放大与键盘翻页；每页 20 个应用，适配手机。图片和视频仅保存原始链接，浏览时按需加载，不需要下载媒体文件。
@@ -27,14 +29,16 @@
 ## 打开页面
 
 ```bash
-gh repo clone devSC/paywall-atlas
+gh repo clone castbox/paywall-atlas
 cd paywall-atlas
 python3 -m http.server 8765 --bind 127.0.0.1
 ```
 
 保持服务运行，在浏览器打开 http://127.0.0.1:8765。也可直接打开本目录的 `index.html`，不需要构建或安装前端依赖。加载远程图片和视频需要联网。
 
-GitHub 仓库保存源码与链接数据，当前未启用在线网站托管。
+在线浏览：https://castbox.github.io/paywall-atlas/
+
+网站由 castbox/paywall-atlas 的 main 分支通过 GitHub Pages 发布；仓库保持私有，网站公开。推送到 castbox 的 main 分支会自动重新部署。
 
 ## 文件
 
