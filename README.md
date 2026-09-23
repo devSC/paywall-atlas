@@ -55,6 +55,22 @@ python3 -m http.server 8765 --bind 127.0.0.1
 
 需要 Python 3 和 curl，无额外 Python 依赖。缓存目录应为当前采集独立使用的新目录；相同目录可用于故障后的断点续采。
 
+推荐使用交互式向导：
+
+```bash
+python3 scripts/refresh.py
+```
+
+向导会依次询问年份、缓存目录、抓取节奏和可选的 DNS 解析地址；抓取完成后，再确认是否生成数据、检查媒体链接、提交并部署。默认“温和”节奏在分页请求之间随机等待，并定期休息。它使用透明的工具标识，不伪装浏览器指纹、不绕过验证码或权限限制。
+
+可以先查看默认计划而不执行：
+
+```bash
+python3 scripts/refresh.py --plan
+```
+
+手动执行方式：
+
 ```bash
 python3 scripts/collect.py --cache /tmp/paywallpro-new-run --year 2026
 python3 scripts/build_data.py --cache /tmp/paywallpro-new-run

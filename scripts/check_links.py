@@ -11,9 +11,10 @@ def check(url):
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--resume',action='store_true');p.add_argument('--start-app',type=int,default=0);p.add_argument('--cache',type=pathlib.Path,required=True);p.add_argument('--output',type=pathlib.Path,required=True);a=p.parse_args()
+    year=json.loads((a.cache/'report.json').read_text())['year']
     rows=[]
     for file in sorted(a.cache.glob('page-*.json')):
-        x=json.loads(file.read_text());rows.extend(r for r in (x.get('data') or {}).get('rows',[]) if str(r.get('recent_capture_update','')).startswith('2026-'))
+        x=json.loads(file.read_text());rows.extend(r for r in (x.get('data') or {}).get('rows',[]) if str(r.get('recent_capture_update','')).startswith(f'{year}-'))
     rows=rows[a.start_app:]
     wanted=[]
     for row in rows:
